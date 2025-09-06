@@ -1,0 +1,33 @@
+#search-suggestions-div {
+  z-index: 998;
+  position: absolute;
+  width: 99.2%;
+  margin-top: 5px;
+}
+
+#search-suggestions {
+  padding: 0;
+  margin: 0;
+}
+
+.suggestion-button {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  text-align: left;
+  transition: background-color 0.3s ease;
+  display: block;
+  font-size: 15px;
+}
+
+.suggestion-button:hover {
+  background-color: #232323;
+}
+
+.suggestion-button em {
+  font-style: italic;
+}
+
+.align-right {
+  float: right;
+}

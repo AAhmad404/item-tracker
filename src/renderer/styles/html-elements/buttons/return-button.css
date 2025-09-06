@@ -1,0 +1,17 @@
+#return-button {
+  width: 45px;
+  height: 45px;
+  line-height: 28px;
+  font-size: 17px;
+  margin-left: 3px;
+  border: 2px solid transparent;
+  border-radius: 1px;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+  transition: 0.3s ease;
+}
+
+#return-button:hover,
+#return-button:focus {
+  border-color: rgba(139, 220, 255, 0.4);
+  background-color: #232323;
+}

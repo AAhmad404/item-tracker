@@ -1,0 +1,17 @@
+.upload-button {
+  width: fit-content;
+  height: fit-content;
+  padding: 8px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  border: 2px solid transparent;
+  border-radius: 3px;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+  transition: 0.3s ease;
+}
+
+.upload-button:hover,
+.upload-button:focus {
+  border-color: rgba(139, 220, 255, 0.4);
+  background-color: #232323;
+}

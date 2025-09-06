@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Item Tracker</title>
+    <!-- jQuery library -->
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <!-- JavaScript scripts -->
+    <script src="../js/navigation-utils.js"></script>
+    <script src="../js/render-search-suggestions.js"></script>
+    <script src="../js/render-recent-items.js"></script>
+    <script src="../js/upload-image-script.js"></script>
+    <script src="../js/add-item.js"></script>
+    <script src="../js/delete-item.js"></script>
+    <script src="../js/update-item.js"></script>
+    <script src="../js/popup.js"></script>
+    <script src="../js/render.js"></script>
+    <!-- CSS styling -->
+    <link rel="stylesheet" href="../styles/custom-elements/item-information.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../styles/index.css" />
+  </head>
+  <body>
+    <!-- Menubar with search functionality -->
+    <div class="menubar" id="menubar">
+      <button class="return-button" id="return-button"><</button>
+      <div class="search-bar-div" id="search-bar-div">
+        <!-- Search icon -->
+        <svg class="search-icon" id="search-icon" aria-hidden="true" viewBox="0 0 24 24">
+          <g>
+            <path
+              d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"
+            ></path>
+          </g>
+        </svg>
+        <!-- Search input -->
+        <input id="search-bar" placeholder="Search" type="search" class="search-bar" />
+      </div>
+    </div>
+    <!-- Search suggestions div -->
+    <div id="search-suggestions-div" class="search-suggestions-div">
+      <ol id="search-suggestions" class="search-suggestions"></ol>
+    </div>
+    <!-- Home section with recent items and add item button -->
+    <div id="home-section" class="section">
+      <div class="recent-items-div" id="recent-items-div"></div>
+      <button id="add-item-button">Add Item</button>
+    </div>
+
+    <!-- Add item section -->
+    <div id="add-item-section" class="section">
+      <div class="message" id="add-item-title"></div>
+      <div class="content">
+        <!-- Image upload section -->
+        <div class="image-section">
+          <div id="add-item-image" class="item-image" onclick="showPopup('add-item')">
+            <i class="fas fa-search-plus magnifying-glass"></i>
+          </div>
+          <!-- Hidden file uploader input -->
+          <input
+            id="add-item-file-uploader"
+            class="file-uploader"
+            type="file"
+            accept="image/*"
+            style="display: none"
+          />
+          <!-- Upload button -->
+          <button
+            id="add-item-upload-button"
+            class="upload-button"
+            onclick="triggerFileUpload('add-item')"
+          >
+            <i class="fas fa-upload" aria-hidden="true"></i> Upload
+          </button>
+
+          <!-- Image popup for add item section -->
+          <div id="add-item-image-popup" class="popup">
+            <span class="close" onclick="closePopup('add-item')">&times;</span>
+            <img id="add-item-popup-image" class="popup-content" />
+          </div>
+        </div>
+        <div class="content-divider"></div>
+        <!-- Information section for adding item details -->
+        <div class="info-section">
+          <div class="info-item">
+            <label for="add-item-name-input">Item Name</label>
+            <input
+              type="text"
+              class="info-input"
+              id="add-item-name-input"
+              value="Item Name"
+              maxlength="50"
+            />
+          </div>
+          <div class="info-item">
+            <label for="add-item-location-input">Location</label>
+            <input
+              type="text"
+              class="info-input"
+              id="add-item-location-input"
+              value="Location"
+              maxlength="50"
+            />
+          </div>
+          <div class="info-item">
+            <label for="add-item-count-input">Count</label>
+            <input type="number" class="info-input" id="add-item-count-input" max="1000000000" />
+          </div>
+          <!-- Add button -->
+          <button id="add-button">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Item information section -->
+    <div id="item-information-section" class="section">
+      <div id="close-button-div">
+        <button class="return-button" id="close-button">&times;</button>
+      </div>
+      <div class="message" id="item-info-title"></div>
+      <div class="content">
+        <!-- Image upload section for item information -->
+        <div class="image-section">
+          <div
+            id="item-information-image"
+            class="item-image"
+            onclick="showPopup('item-information')"
+          >
+            <i class="fas fa-search-plus magnifying-glass"></i>
+          </div>
+          <!-- Hidden file uploader input -->
+          <input
+            id="item-info-file-uploader"
+            class="file-uploader"
+            type="file"
+            accept="image/*"
+            style="display: none"
+          />
+          <!-- Upload button -->
+          <button
+            id="item-info-upload-button"
+            class="upload-button"
+            onclick="triggerFileUpload('item-information')"
+          >
+            <i class="fas fa-upload" aria-hidden="true"></i> Upload
+          </button>
+
+          <!-- Image popup for item information section -->
+          <div id="item-info-image-popup" class="popup">
+            <span class="close" onclick="closePopup('item-information')">&times;</span>
+            <img id="item-info-popup-image" class="popup-content" />
+          </div>
+        </div>
+        <div class="content-divider"></div>
+        <!-- Information section for updating item details -->
+        <div class="info-section">
+          <div class="info-item">
+            <label for="item-info-name-input">Item Name</label>
+            <input
+              type="text"
+              class="info-input"
+              id="item-info-name-input"
+              value="Item Name"
+              maxlength="50"
+            />
+          </div>
+          <div class="info-item">
+            <label for="item-info-location-input">Location</label>
+            <input
+              type="text"
+              class="info-input"
+              id="item-info-location-input"
+              value="Location"
+              maxlength="50"
+            />
+          </div>
+          <div class="info-item">
+            <label for="item-info-count-input">Count</label>
+            <input type="number" class="info-input" id="item-info-count-input" max="1000000000" />
+          </div>
+          <!-- Save button -->
+          <button id="save-button">Save</button>
+          <button id="delete-item-button">Delete</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

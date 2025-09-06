@@ -1,0 +1,6 @@
+node_modules/
+dist/
+build/
+out/
+src/main/database/
+src/resources/images/item-images/

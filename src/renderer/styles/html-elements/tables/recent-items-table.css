@@ -1,0 +1,40 @@
+#recent-items-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: fit-content;
+  width: 100%;
+}
+
+#recent-items-table {
+  width: 40%;
+  border-collapse: collapse;
+  color: #9e9ea7;
+  background-color: #292828;
+  border-radius: 3px;
+  margin-top: 20px;
+  margin-bottom: 25px;
+}
+
+#recent-items-table tr {
+  border-bottom: 1px solid #393939;
+  transition: background-color 0.3s ease;
+}
+
+#recent-items-table tr:hover {
+  background-color: #232323;
+}
+
+#recent-items-table tr:last-child {
+  border-bottom: none;
+}
+
+#recent-items-table td span {
+  color: #9e9ea7;
+  font-style: italic;
+}
+
+#align-right {
+  text-align: right;
+}

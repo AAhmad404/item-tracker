@@ -1,0 +1,17 @@
+/* HTML elements */
+@import url('html-elements/tables/tables.css');
+@import url('html-elements/buttons/buttons.css');
+
+/* Custom elements */
+@import url('custom-elements/popups/popups.css');
+@import url('custom-elements/sections/sections.css');
+@import url('custom-elements/search-bar.css');
+@import url('custom-elements/menubar.css');
+@import url('custom-elements/search-suggestions.css');
+@import url('custom-elements/message.css');
+@import url('custom-elements/upload-image.css');
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #1f1f1f;
+}

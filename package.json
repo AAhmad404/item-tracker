@@ -1,0 +1,50 @@
+{
+  "name": "item-tracker",
+  "productName": "Item Tracker",
+  "version": "1.0.0",
+  "description": "Application to track Items.",
+  "main": "src/main/main.js",
+  "win": {
+    "icon": "src/resources/icons/app-icon.ico"
+  },
+  "mac": {
+    "icon": "src/resources/icons/app-icon.icns"
+  },
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "prettier --check \"src/**/*.{js,css,html,json,md}\"",
+    "format": "prettier --write \"src/**/*.{js,css,html,json,md}\""
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.4.0",
+    "@electron-forge/maker-deb": "^7.4.0",
+    "@electron-forge/maker-rpm": "^7.4.0",
+    "@electron-forge/maker-squirrel": "^7.4.0",
+    "@electron-forge/maker-zip": "^7.4.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
+    "@electron-forge/plugin-fuses": "^7.4.0",
+    "@electron/fuses": "^1.8.0",
+    "electron": "30.0.7",
+    "electron-build": "^0.0.3",
+  "electron-rebuild": "^3.2.9",
+  "prettier": "^2.8.8"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1",
+    "electronmon": "^2.0.3",
+    "sqlite3": "^5.1.7"
+  }
+  ,
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "icon": "src/resources/icons/app-icon"
+      }
+    }
+  }
+}

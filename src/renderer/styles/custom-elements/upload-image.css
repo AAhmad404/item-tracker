@@ -1,0 +1,81 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+.item-image {
+  opacity: 0.75;
+  height: 200px;
+  width: 200px;
+  margin: 20px;
+  position: relative;
+  overflow: hidden;
+  border: 3px solid #ccc;
+  border-radius: 10px;
+  cursor: pointer;
+  background-position: center;
+}
+
+.item-image:hover .upload-icon {
+  opacity: 1;
+}
+
+.upload-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  color: #ccc;
+  font-size: 2rem;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.file-uploader {
+  opacity: 0;
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  z-index: 20;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  background: rgba(0, 0, 0, 0);
+  cursor: pointer;
+}
+
+.close {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: #fff;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.magnifying-glass {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: white;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+  color: #1f1f1f;
+}
+
+.item-image:hover .magnifying-glass {
+  opacity: 1;
+}

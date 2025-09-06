@@ -1,0 +1,16 @@
+@import url('add-item-button.css');
+@import url('add-button.css');
+@import url('suggestion-button.css');
+@import url('recent-items-button.css');
+@import url('return-button.css');
+@import url('save-button.css');
+@import url('close-button.css');
+@import url('upload-button.css');
+@import url('delete-button.css');
+
+button {
+  background: #303030;
+  color: #9e9ea7;
+  cursor: pointer;
+  outline: none;
+}

@@ -1,0 +1,18 @@
+#search-suggestions-div {
+  z-index: 998;
+  position: absolute;
+  width: 99.5%;
+  margin-top: 3px;
+}
+
+#search-suggestions {
+  list-style: none;
+}
+
+#search-suggestions li {
+  border-bottom: 1px solid #393939;
+}
+
+#search-suggestions li:last-child {
+  border-bottom: none;
+}
