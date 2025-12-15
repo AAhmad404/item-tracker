@@ -1,33 +1,35 @@
 export function initUpdateItem() {
-  $('#save-button').on('click', () => {
+  $('#save-button').on('click', async () => {
     const updatedItem = validateForm();
     if (!updatedItem) return;
 
     const itemImageEl = $('#item-information-image');
     const savedFileUrl = itemImageEl.data('saved-file-url') || '';
 
-    let imageData = '';
-    let filename = '';
-
     if (savedFileUrl) {
-      filename = savedFileUrl;
-    } else {
-      const bg = itemImageEl.css('background-image');
-      if (bg && bg !== 'none') {
-        imageData = bg.replace(/url\(['"]?(.*?)['"]?\)/, '$1');
-      } else {
-        imageData = '';
-      }
-
-      const isDataUrl = imageData && (imageData.startsWith('data:image/png') || imageData.startsWith('data:image/jpeg'));
-      filename = isDataUrl ? `item_image_${Date.now()}.jpg` : '';
+      window.electron.send('update-item-information', { updatedItem, imageData: '', filename: savedFileUrl });
+      return;
     }
 
-    window.electron.send('update-item-information', {
-      updatedItem,
-      imageData: imageData || '',
-      filename,
-    });
+    const bg = itemImageEl.css('background-image');
+    if (bg && bg !== 'none') {
+      const imageUrl = bg.replace(/url\(['\"]?(.*?)['\"]?\)/, '$1');
+      if (imageUrl.startsWith('data:image/')) {
+        try {
+          const filename = `item_image_${Date.now()}.jpg`;
+          const resp = await fetch(imageUrl);
+          const arrayBuffer = await resp.arrayBuffer();
+          const savedFileUrl2 = await window.electron.invoke('save-image-binary', arrayBuffer, filename);
+          window.electron.send('update-item-information', { updatedItem, imageData: '', filename: savedFileUrl2 });
+          return;
+        } catch (e) {
+          showErrorDialog('Failed to save image; please try uploading again.');
+          return;
+        }
+      }
+    }
+
+    window.electron.send('update-item-information', { updatedItem, imageData: '', filename: '' });
   });
 
   function validateForm() {

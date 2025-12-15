@@ -18,7 +18,7 @@ if (!fs.existsSync(resourcesPath)) {
   fs.mkdirSync(resourcesPath, { recursive: true });
 }
 
-// Copy packaged DB to userData on first run so the app can write to it
+// Copy packaged DB to userData on first run
 const packagedDbPath = path.join(app.getAppPath(), 'src', 'main', 'database', 'database.db');
 const userDbPath = path.join(userDataPath, 'database.db');
 if (!fs.existsSync(userDbPath)) {
@@ -40,8 +40,7 @@ const db = new sqlite3.Database(userDbPath, (err) => {
   }
 });
 
-// IPC handler to save binary image data (ArrayBuffer) from renderer.
-// This avoids base64 serialization overhead and is more efficient for large files.
+// IPC handler: save binary image data (ArrayBuffer)
 ipcMain.handle('save-image-binary', async (_, arrayBuffer, filename) => {
   try {
     const buffer = Buffer.from(arrayBuffer);
@@ -54,41 +53,10 @@ ipcMain.handle('save-image-binary', async (_, arrayBuffer, filename) => {
     await fs.promises.writeFile(filePath, buffer);
     return pathToFileURL(filePath).href;
   } catch (err) {
-    // Let the renderer handle the error; rethrow so ipcRenderer.invoke rejects
+    // Rethrow error
     throw err;
   }
 });
-
-function saveImage(imageData, filename) {
-  return new Promise((resolve, reject) => {
-    let base64Data = '';
-
-    if (imageData.startsWith('data:image/png')) {
-      base64Data = imageData.replace(/^data:image\/png;base64,/, '');
-    } else if (imageData.startsWith('data:image/jpeg') || imageData.startsWith('data:image/jpg')) {
-      base64Data = imageData.replace(/^data:image\/jpeg;base64,/, '');
-    } else {
-      reject(new Error('Unsupported image format'));
-      return;
-    }
-
-    const filePath = path.join(resourcesPath, filename);
-
-    // Ensure the directory exists
-    if (!fs.existsSync(resourcesPath)) {
-      fs.mkdirSync(resourcesPath, { recursive: true });
-    }
-
-    fs.writeFile(filePath, base64Data, 'base64', (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        // Return a file:// URL for use in the renderer
-        resolve(pathToFileURL(filePath).href);
-      }
-    });
-  });
-}
 
 // Function to update item in the database with image path
 const updateItemInformation = (item, filename) => {
@@ -246,8 +214,9 @@ ipcMain.on('get-recent-items', (event) => {
 });
 
 ipcMain.on('update-item-information', (event, { updatedItem, imageData, filename }) => {
-  // If the renderer already saved the file and provided a file:// URL, use it
-  // directly. Otherwise, if imageData (base64) is present, save it here.
+  // If the renderer already saved the file and provided a file:// URL, use it.
+  // Do not accept base64 image data from the renderer any more; the renderer
+  // must save via the binary path and provide a file:// URL.
   if (filename && typeof filename === 'string' && filename.startsWith('file://')) {
     updateItemInformation(updatedItem, filename)
       .then((item) => {
@@ -257,19 +226,11 @@ ipcMain.on('update-item-information', (event, { updatedItem, imageData, filename
         event.sender.send('item-updated', { success: false, error });
       });
   } else if (imageData) {
-    saveImage(imageData, filename)
-      .then((savedFilename) => {
-        updateItemInformation(updatedItem, savedFilename)
-          .then((item) => {
-            event.sender.send('item-updated', { success: true, item });
-          })
-          .catch((error) => {
-            event.sender.send('item-updated', { success: false, error });
-          });
-      })
-      .catch((error) => {
-        event.sender.send('item-updated', { success: false, error: error.message });
-      });
+    // Reject base64 data from renderer
+    event.sender.send('item-updated', {
+      success: false,
+      error: 'Inline base64 image data is no longer supported. Please re-upload the image using the file upload control.',
+    });
   } else {
     updateItemInformation(updatedItem)
       .then((item) => {
@@ -282,7 +243,7 @@ ipcMain.on('update-item-information', (event, { updatedItem, imageData, filename
 });
 
 ipcMain.on('add-item-information', (event, { newItem, imageData, filename }) => {
-  // If renderer already saved the image and provided a file:// URL, use it
+  // If renderer already saved the image and provided a file:// URL, use it.
   if (filename && typeof filename === 'string' && filename.startsWith('file://')) {
     addItemInformation(newItem, filename)
       .then((item) => {
@@ -292,19 +253,11 @@ ipcMain.on('add-item-information', (event, { newItem, imageData, filename }) => 
         event.sender.send('item-added', { success: false, error });
       });
   } else if (imageData) {
-    saveImage(imageData, filename)
-      .then((savedFilename) => {
-        addItemInformation(newItem, savedFilename)
-          .then((item) => {
-            event.sender.send('item-added', { success: true, item });
-          })
-          .catch((error) => {
-            event.sender.send('item-added', { success: false, error });
-          });
-      })
-      .catch((error) => {
-        event.sender.send('item-added', { success: false, error: error.message });
-      });
+    // Reject inline base64 data
+    event.sender.send('item-added', {
+      success: false,
+      error: 'Please re-upload the image using the file upload control.',
+    });
   } else {
     addItemInformation(newItem)
       .then((item) => {
