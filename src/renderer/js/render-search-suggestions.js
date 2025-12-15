@@ -1,4 +1,4 @@
-$(document).ready(() => {
+export function initSearchSuggestions() {
   $('#search-bar').on('input', () => {
     const searchText = $('#search-bar').val().trim();
 
@@ -31,7 +31,7 @@ $(document).ready(() => {
 
         const button = $('<button>')
           .addClass('suggestion-button')
-          .html(`${highlightedName} <em class="align-right">${highlightedLocation}</em>`)
+          .html(`${highlightedName} <em class="align-right">${highlightedLocation}</em>`) 
           .data('item', item);
 
         const listItem = $('<li>').append(button);
@@ -52,4 +52,6 @@ $(document).ready(() => {
   function showErrorDialog(message) {
     window.electron.send('show-error-dialog', { message });
   }
-});
+}
+
+export default initSearchSuggestions;

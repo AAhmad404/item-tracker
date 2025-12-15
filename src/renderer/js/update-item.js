@@ -1,4 +1,4 @@
-$(document).ready(() => {
+export function initUpdateItem() {
   $('#save-button').on('click', () => {
     const updatedItem = validateForm();
     if (!updatedItem) return;
@@ -80,4 +80,6 @@ $(document).ready(() => {
   function showSuccessDialog(message) {
     window.electron.send('show-success-dialog', { message });
   }
-});
+}
+
+export default initUpdateItem;

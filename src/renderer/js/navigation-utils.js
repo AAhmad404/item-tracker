@@ -1,5 +1,5 @@
 // Shared utility functions for navigation and UI updates
-$(document).ready(() => {
+export function initNavigationUtils() {
   window.refreshRecentItems = function () {
     const recentItemsDiv = $('#recent-items-div');
     recentItemsDiv.empty();
@@ -22,4 +22,6 @@ $(document).ready(() => {
     $('#item-information-section').hide();
     $('#home-section').show();
   };
-});
+}
+
+export default initNavigationUtils;

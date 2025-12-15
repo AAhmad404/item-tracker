@@ -1,4 +1,4 @@
-$(document).ready(() => {
+export function initAddItem() {
   $('#add-button').on('click', () => {
     const newItem = validateForm();
     if (!newItem) return;
@@ -79,4 +79,6 @@ $(document).ready(() => {
   function showSuccessDialog(message) {
     window.electron.send('show-success-dialog', { message });
   }
-});
+}
+
+export default initAddItem;

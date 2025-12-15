@@ -1,4 +1,4 @@
-$(document).ready(() => {
+export function initRecentItems() {
   window.electron.send('get-recent-items');
 
   const recentItemsDiv = $('#recent-items-div');
@@ -43,4 +43,6 @@ $(document).ready(() => {
   function showErrorDialog(message) {
     window.electron.send('show-error-dialog', { message });
   }
-});
+}
+
+export default initRecentItems;
