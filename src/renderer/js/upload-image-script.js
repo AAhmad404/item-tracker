@@ -61,22 +61,36 @@ $(document).ready(() => {
           // Draw and compress the image
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Convert to compressed format
-          const compressedImageUrl = canvas.toDataURL('image/jpeg');
+          // Convert and save the image using a binary transfer to the main
+          // process to avoid base64 overhead. We use canvas.toBlob, then send
+          // the ArrayBuffer via the preload's invoke wrapper.
+          const saveAsFilename = `item_image_${Date.now()}.jpg`;
 
-          if (section === 'item-information') {
-            const itemImage = $(`#item-information-image`);
-            itemImage.css('background-image', `url(${compressedImageUrl})`);
-            $('#item-info-popup-image').attr('src', compressedImageUrl);
+          canvas.toBlob(async (blob) => {
+            try {
+              const arrayBuffer = await blob.arrayBuffer();
+              // Save in main process; preload exposes electron.invoke
+              const savedFileUrl = await window.electron.invoke('save-image-binary', arrayBuffer, saveAsFilename);
 
-            itemImage.data('filename', filename);
-          } else {
-            const itemImage = $(`#add-item-image`);
-            itemImage.css('background-image', `url(${compressedImageUrl})`);
-            $('#add-item-popup-image').attr('src', compressedImageUrl);
+              if (section === 'item-information') {
+                const itemImage = $(`#item-information-image`);
+                itemImage.css('background-image', `url(${savedFileUrl})`);
+                $('#item-info-popup-image').attr('src', savedFileUrl);
 
-            itemImage.data('filename', filename);
-          }
+                itemImage.data('saved-file-url', savedFileUrl);
+                itemImage.data('filename', saveAsFilename);
+              } else {
+                const itemImage = $(`#add-item-image`);
+                itemImage.css('background-image', `url(${savedFileUrl})`);
+                $('#add-item-popup-image').attr('src', savedFileUrl);
+
+                itemImage.data('saved-file-url', savedFileUrl);
+                itemImage.data('filename', saveAsFilename);
+              }
+            } catch (e) {
+              alert('Failed to save image: ' + (e && e.message ? e.message : e));
+            }
+          }, 'image/jpeg', 0.85);
         };
         img.src = imageUrl;
       };

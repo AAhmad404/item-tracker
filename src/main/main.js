@@ -40,6 +40,25 @@ const db = new sqlite3.Database(userDbPath, (err) => {
   }
 });
 
+// IPC handler to save binary image data (ArrayBuffer) from renderer.
+// This avoids base64 serialization overhead and is more efficient for large files.
+ipcMain.handle('save-image-binary', async (_, arrayBuffer, filename) => {
+  try {
+    const buffer = Buffer.from(arrayBuffer);
+    const filePath = path.join(resourcesPath, filename);
+
+    if (!fs.existsSync(resourcesPath)) {
+      fs.mkdirSync(resourcesPath, { recursive: true });
+    }
+
+    await fs.promises.writeFile(filePath, buffer);
+    return pathToFileURL(filePath).href;
+  } catch (err) {
+    // Let the renderer handle the error; rethrow so ipcRenderer.invoke rejects
+    throw err;
+  }
+});
+
 function saveImage(imageData, filename) {
   return new Promise((resolve, reject) => {
     let base64Data = '';
@@ -227,10 +246,20 @@ ipcMain.on('get-recent-items', (event) => {
 });
 
 ipcMain.on('update-item-information', (event, { updatedItem, imageData, filename }) => {
-  if (imageData) {
+  // If the renderer already saved the file and provided a file:// URL, use it
+  // directly. Otherwise, if imageData (base64) is present, save it here.
+  if (filename && typeof filename === 'string' && filename.startsWith('file://')) {
+    updateItemInformation(updatedItem, filename)
+      .then((item) => {
+        event.sender.send('item-updated', { success: true, item });
+      })
+      .catch((error) => {
+        event.sender.send('item-updated', { success: false, error });
+      });
+  } else if (imageData) {
     saveImage(imageData, filename)
-      .then((filename) => {
-        updateItemInformation(updatedItem, filename)
+      .then((savedFilename) => {
+        updateItemInformation(updatedItem, savedFilename)
           .then((item) => {
             event.sender.send('item-updated', { success: true, item });
           })
@@ -253,10 +282,19 @@ ipcMain.on('update-item-information', (event, { updatedItem, imageData, filename
 });
 
 ipcMain.on('add-item-information', (event, { newItem, imageData, filename }) => {
-  if (imageData) {
+  // If renderer already saved the image and provided a file:// URL, use it
+  if (filename && typeof filename === 'string' && filename.startsWith('file://')) {
+    addItemInformation(newItem, filename)
+      .then((item) => {
+        event.sender.send('item-added', { success: true, item });
+      })
+      .catch((error) => {
+        event.sender.send('item-added', { success: false, error });
+      });
+  } else if (imageData) {
     saveImage(imageData, filename)
-      .then((filename) => {
-        addItemInformation(newItem, filename)
+      .then((savedFilename) => {
+        addItemInformation(newItem, savedFilename)
           .then((item) => {
             event.sender.send('item-added', { success: true, item });
           })

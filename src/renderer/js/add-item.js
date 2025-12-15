@@ -3,24 +3,33 @@ $(document).ready(() => {
     const newItem = validateForm();
     if (!newItem) return;
 
-    let imageData = $('#add-item-image').css('background-image');
+    // Prefer saved file URL from the upload flow (binary save). Fallback to
+    // reading the background-image (could be a data URL) for legacy cases.
+    const itemImageEl = $('#add-item-image');
+    const savedFileUrl = itemImageEl.data('saved-file-url') || '';
 
-    if (imageData && imageData !== 'none') {
-      imageData = imageData.replace(/url\(['"]?(.*?)['"]?\)/, '$1');
+    let imageData = '';
+    let filename = '';
+
+    if (savedFileUrl) {
+      // Already saved by the renderer via binary transfer; send filename as the
+      // saved file URL so the main add handler can store it directly.
+      filename = savedFileUrl;
     } else {
-      imageData = '';
+      imageData = itemImageEl.css('background-image');
+      if (imageData && imageData !== 'none') {
+        imageData = imageData.replace(/url\(['"]?(.*?)['"]?\)/, '$1');
+      } else {
+        imageData = '';
+      }
+
+      const isDataUrl = imageData && (imageData.startsWith('data:image/png') || imageData.startsWith('data:image/jpeg'));
+      filename = isDataUrl ? `item_image_${Date.now()}.jpg` : '';
     }
-
-    // Check if the imageData is a data URL (base64 format)
-    const isDataUrl =
-      imageData.startsWith('data:image/png') || imageData.startsWith('data:image/jpeg');
-
-    // Generate unique filename if the image is new
-    const filename = isDataUrl ? `item_image_${Date.now()}.jpg` : '';
 
     window.electron.send('add-item-information', {
       newItem,
-      imageData: isDataUrl ? imageData : '',
+      imageData: imageData || '',
       filename,
     });
   });

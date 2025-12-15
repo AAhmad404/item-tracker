@@ -3,20 +3,29 @@ $(document).ready(() => {
     const updatedItem = validateForm();
     if (!updatedItem) return;
 
-    const imageData = $('#item-information-image')
-      .css('background-image')
-      .replace(/url\(['"]?(.*?)['"]?\)/, '$1');
+    const itemImageEl = $('#item-information-image');
+    const savedFileUrl = itemImageEl.data('saved-file-url') || '';
 
-    // Check if the imageData is a data URL (base64 format)
-    const isDataUrl =
-      imageData.startsWith('data:image/png') || imageData.startsWith('data:image/jpeg');
+    let imageData = '';
+    let filename = '';
 
-    // Generate unique filename if the image is new (using .jpg since we compress to JPEG)
-    const filename = isDataUrl ? `item_image_${Date.now()}.jpg` : '';
+    if (savedFileUrl) {
+      filename = savedFileUrl;
+    } else {
+      const bg = itemImageEl.css('background-image');
+      if (bg && bg !== 'none') {
+        imageData = bg.replace(/url\(['"]?(.*?)['"]?\)/, '$1');
+      } else {
+        imageData = '';
+      }
+
+      const isDataUrl = imageData && (imageData.startsWith('data:image/png') || imageData.startsWith('data:image/jpeg'));
+      filename = isDataUrl ? `item_image_${Date.now()}.jpg` : '';
+    }
 
     window.electron.send('update-item-information', {
       updatedItem,
-      imageData: isDataUrl ? imageData : '',
+      imageData: imageData || '',
       filename,
     });
   });
