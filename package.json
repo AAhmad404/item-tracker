@@ -27,8 +27,7 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron/fuses": "^1.8.0",
-    "electron": "30.0.7",
-    "electron-build": "^0.0.3",
+    "electron": "^39.2.7",
     "electron-rebuild": "^3.2.9",
     "prettier": "^2.8.8"
   },
