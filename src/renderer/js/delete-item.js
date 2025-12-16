@@ -1,4 +1,4 @@
-$(document).ready(() => {
+export function initDeleteItem() {
   $('#delete-item-button').on('click', () => {
     if (!window.currentItem || !window.currentItem.id) {
       return;
@@ -26,4 +26,6 @@ $(document).ready(() => {
   function showSuccessDialog(message) {
     window.electron.send('show-success-dialog', { message });
   }
-});
+}
+
+export default initDeleteItem;

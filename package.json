@@ -11,7 +11,7 @@
     "icon": "src/resources/icons/app-icon.icns"
   },
   "scripts": {
-    "start": "electron-forge start",
+    "start": "npx electronmon .",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
@@ -29,17 +29,16 @@
     "@electron/fuses": "^1.8.0",
     "electron": "30.0.7",
     "electron-build": "^0.0.3",
-  "electron-rebuild": "^3.2.9",
-  "prettier": "^2.8.8"
+    "electron-rebuild": "^3.2.9",
+    "prettier": "^2.8.8"
   },
   "keywords": [],
   "license": "MIT",
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
-    "electronmon": "^2.0.3",
+    "electronmon": "^2.0.4",
     "sqlite3": "^5.1.7"
-  }
-  ,
+  },
   "config": {
     "forge": {
       "packagerConfig": {

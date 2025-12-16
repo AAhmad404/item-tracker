@@ -1,28 +1,39 @@
-$(document).ready(() => {
-  $('#add-button').on('click', () => {
+export function initAddItem() {
+  $('#add-button').on('click', async () => {
     const newItem = validateForm();
     if (!newItem) return;
 
-    let imageData = $('#add-item-image').css('background-image');
+    const itemImageEl = $('#add-item-image');
+    const savedFileUrl = itemImageEl.data('saved-file-url') || '';
 
-    if (imageData && imageData !== 'none') {
-      imageData = imageData.replace(/url\(['"]?(.*?)['"]?\)/, '$1');
-    } else {
-      imageData = '';
+    // If the upload flow already saved the file, send that file URL.
+    if (savedFileUrl) {
+      window.electron.send('add-item-information', { newItem, imageData: '', filename: savedFileUrl });
+      return;
     }
 
-    // Check if the imageData is a data URL (base64 format)
-    const isDataUrl =
-      imageData.startsWith('data:image/png') || imageData.startsWith('data:image/jpeg');
+    // Otherwise, check the background-image; if it's a data URL, save it
+    // here by converting to a Blob and invoking the binary save handler.
+    const bg = itemImageEl.css('background-image');
+    if (bg && bg !== 'none') {
+      const imageUrl = bg.replace(/url\(['\"]?(.*?)['\"]?\)/, '$1');
+      if (imageUrl.startsWith('data:image/')) {
+        try {
+          const filename = `item_image_${Date.now()}.jpg`;
+          const resp = await fetch(imageUrl);
+          const arrayBuffer = await resp.arrayBuffer();
+          const savedFileUrl2 = await window.electron.invoke('save-image-binary', arrayBuffer, filename);
+          window.electron.send('add-item-information', { newItem, imageData: '', filename: savedFileUrl2 });
+          return;
+        } catch (e) {
+          showErrorDialog('Failed to save image; please try uploading again.');
+          return;
+        }
+      }
+    }
 
-    // Generate unique filename if the image is new
-    const filename = isDataUrl ? `item_image_${Date.now()}.jpg` : '';
-
-    window.electron.send('add-item-information', {
-      newItem,
-      imageData: isDataUrl ? imageData : '',
-      filename,
-    });
+    // No image provided; proceed without image.
+    window.electron.send('add-item-information', { newItem, imageData: '', filename: '' });
   });
 
   window.electron.on('item-added', (response) => {
@@ -70,4 +81,6 @@ $(document).ready(() => {
   function showSuccessDialog(message) {
     window.electron.send('show-success-dialog', { message });
   }
-});
+}
+
+export default initAddItem;

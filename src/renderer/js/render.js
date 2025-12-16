@@ -1,4 +1,4 @@
-$(document).ready(() => {
+export function initRender() {
   const homeSection = $('#home-section');
   const addItemSection = $('#add-item-section');
   const itemInformationSection = $('#item-information-section');
@@ -89,4 +89,6 @@ $(document).ready(() => {
     itemInformationSection.hide();
     homeSection.show();
   });
-});
+}
+
+export default initRender;

@@ -1,7 +1,6 @@
 # Item Tracker
 
-Item Tracker is a simple desktop application built using JavaScript and the Electron framework that allows
-users to organize and manage items.
+Item Tracker is a simple desktop application built using JavaScript and the Electron framework that allows users to organize and manage items.
 
 ## Features
 

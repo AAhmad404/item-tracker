@@ -1,4 +1,4 @@
-$(document).ready(() => {
+export function initPopups() {
   window.showPopup = function (section) {
     if (section === 'item-information') {
       const itemImage = $('#item-information-image');
@@ -31,4 +31,6 @@ $(document).ready(() => {
 
   $('#item-info-image-popup').hide();
   $('#add-item-image-popup').hide();
-});
+}
+
+export default initPopups;

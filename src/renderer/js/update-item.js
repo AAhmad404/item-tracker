@@ -1,24 +1,35 @@
-$(document).ready(() => {
-  $('#save-button').on('click', () => {
+export function initUpdateItem() {
+  $('#save-button').on('click', async () => {
     const updatedItem = validateForm();
     if (!updatedItem) return;
 
-    const imageData = $('#item-information-image')
-      .css('background-image')
-      .replace(/url\(['"]?(.*?)['"]?\)/, '$1');
+    const itemImageEl = $('#item-information-image');
+    const savedFileUrl = itemImageEl.data('saved-file-url') || '';
 
-    // Check if the imageData is a data URL (base64 format)
-    const isDataUrl =
-      imageData.startsWith('data:image/png') || imageData.startsWith('data:image/jpeg');
+    if (savedFileUrl) {
+      window.electron.send('update-item-information', { updatedItem, imageData: '', filename: savedFileUrl });
+      return;
+    }
 
-    // Generate unique filename if the image is new (using .jpg since we compress to JPEG)
-    const filename = isDataUrl ? `item_image_${Date.now()}.jpg` : '';
+    const bg = itemImageEl.css('background-image');
+    if (bg && bg !== 'none') {
+      const imageUrl = bg.replace(/url\(['\"]?(.*?)['\"]?\)/, '$1');
+      if (imageUrl.startsWith('data:image/')) {
+        try {
+          const filename = `item_image_${Date.now()}.jpg`;
+          const resp = await fetch(imageUrl);
+          const arrayBuffer = await resp.arrayBuffer();
+          const savedFileUrl2 = await window.electron.invoke('save-image-binary', arrayBuffer, filename);
+          window.electron.send('update-item-information', { updatedItem, imageData: '', filename: savedFileUrl2 });
+          return;
+        } catch (e) {
+          showErrorDialog('Failed to save image; please try uploading again.');
+          return;
+        }
+      }
+    }
 
-    window.electron.send('update-item-information', {
-      updatedItem,
-      imageData: isDataUrl ? imageData : '',
-      filename,
-    });
+    window.electron.send('update-item-information', { updatedItem, imageData: '', filename: '' });
   });
 
   function validateForm() {
@@ -71,4 +82,6 @@ $(document).ready(() => {
   function showSuccessDialog(message) {
     window.electron.send('show-success-dialog', { message });
   }
-});
+}
+
+export default initUpdateItem;
